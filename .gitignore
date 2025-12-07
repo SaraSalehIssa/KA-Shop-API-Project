@@ -1,6 +1,9 @@
 # Visual Studio
 .vs/
+<<<<<<< HEAD
 
+=======
+>>>>>>> edee22e (Remove build/IDE outputs from tracking and add .gitignore)
 # Build outputs
 **/bin/
 **/obj/
@@ -8,3 +11,11 @@
 *.pdb
 *.exe
 *.cache
+<<<<<<< HEAD
+=======
+# User-specific files
+*.user
+*.suo
+# Rider & others
+.idea/
+>>>>>>> edee22e (Remove build/IDE outputs from tracking and add .gitignore)
