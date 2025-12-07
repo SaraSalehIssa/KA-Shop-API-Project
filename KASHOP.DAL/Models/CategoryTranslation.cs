@@ -6,15 +6,12 @@ using System.Threading.Tasks;
 
 namespace KASHOP.DAL.Models
 {
-<<<<<<< HEAD
-    public class Category
+    public class CategoryTranslation
     {
         public int Id { get; set; }
         public string Name { get; set; }
-=======
-    public class Category: BaseModel
-    {
-        public List<CategoryTranslation> Translations { get; set; }
->>>>>>> 0659c09 (Localization)
+        public string Language { get; set; } = "en";
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
     }
 }
