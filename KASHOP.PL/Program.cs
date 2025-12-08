@@ -1,14 +1,9 @@
-
 using KASHOP.DAL;
 using KASHOP.DAL.Data;
-<<<<<<< HEAD
-using Microsoft.EntityFrameworkCore;
-=======
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Globalization;
->>>>>>> 0659c09 (Localization)
 
 namespace KASHOP.PL
 {
@@ -19,47 +14,34 @@ namespace KASHOP.PL
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
 
-<<<<<<< HEAD
-=======
+            // OpenAPI / Swagger
+            builder.Services.AddOpenApi();
+            builder.Services.AddSwaggerGen();
+
+            // Localization (ResourcesPath - set to folder name if you use .resx files)
             builder.Services.AddLocalization(options => options.ResourcesPath = "");
 
->>>>>>> 0659c09 (Localization)
-            //builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            //options.UseSqlServer(builder.Configuration["ConnectionStrings: DefaultConnection"]));
-
-            // OR
-
-            //builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            //options.UseSqlServer(builder.Configuration.GetSection("ConnectionStrings")["DefaultConnection"]));
-<<<<<<< HEAD
-            
-=======
-
->>>>>>> 0659c09 (Localization)
-            // OR
-
+            // Configure EF Core DbContext
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-<<<<<<< HEAD
-            var app = builder.Build();
-
-=======
+            // Configure supported cultures and localization options
             const string defaultCulture = "en";
             var supportedCultures = new[]
             {
                 new CultureInfo(defaultCulture),
-                new CultureInfo("ar"), // Add Arabic
+                new CultureInfo("ar"),
             };
-            builder.Services.Configure<RequestLocalizationOptions>(options => {
+
+            builder.Services.Configure<RequestLocalizationOptions>(options =>
+            {
                 options.DefaultRequestCulture = new RequestCulture(defaultCulture);
                 options.SupportedCultures = supportedCultures;
                 options.SupportedUICultures = supportedCultures;
+
+                // Use only query string provider (lang=...), adjust if needed
                 options.RequestCultureProviders.Clear();
                 options.RequestCultureProviders.Add(new QueryStringRequestCultureProvider
                 {
@@ -67,28 +49,21 @@ namespace KASHOP.PL
                 });
             });
 
-            builder.Services.AddSwaggerGen();
-
             var app = builder.Build();
 
+            // Apply request localization
             app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 
->>>>>>> 0659c09 (Localization)
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
-<<<<<<< HEAD
-=======
                 app.UseSwagger();
                 app.UseSwaggerUI();
->>>>>>> 0659c09 (Localization)
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
 
             app.MapControllers();
 
