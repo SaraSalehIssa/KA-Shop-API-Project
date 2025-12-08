@@ -1,5 +1,6 @@
 using KASHOP.DAL;
 using KASHOP.DAL.Data;
+using KASHOP.DAL.Repository;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -48,6 +49,8 @@ namespace KASHOP.PL
                     QueryStringKey = "lang"
                 });
             });
+
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             var app = builder.Build();
 
