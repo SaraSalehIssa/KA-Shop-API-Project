@@ -1,7 +1,9 @@
 using KASHOP.BLL.Service;
 using KASHOP.DAL;
 using KASHOP.DAL.Data;
+using KASHOP.DAL.Models;
 using KASHOP.DAL.Repository;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -28,6 +30,10 @@ namespace KASHOP.PL
             // Configure EF Core DbContext
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             // Configure supported cultures and localization options
             const string defaultCulture = "en";
