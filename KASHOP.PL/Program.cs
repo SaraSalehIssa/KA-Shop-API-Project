@@ -61,6 +61,7 @@ namespace KASHOP.PL
 
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
             builder.Services.AddScoped<ISeedData, RoleSeedData>();
             builder.Services.AddScoped<ISeedData, UserSeedData>();

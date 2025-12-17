@@ -1,5 +1,21 @@
 [
   {
+    "ContainingType": "KASHOP.PL.Areas.Identity.AccountController",
+    "Method": "Register",
+    "RelativePath": "api/auth/Account/Register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "KASHOP.DAL.DTO.Request.RegisterRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "KASHOP.PL.Controllers.CategoriesController",
     "Method": "Index",
     "RelativePath": "api/Categories",
