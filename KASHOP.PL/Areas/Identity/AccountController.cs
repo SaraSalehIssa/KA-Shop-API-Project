@@ -16,6 +16,17 @@ namespace KASHOP.PL.Areas.Identity
             _authenticationService = authenticationService;
         }
 
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(LoginRequest request)
+        {
+            var result = await _authenticationService.LoginAsync(request);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
         [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterRequest request)
         {

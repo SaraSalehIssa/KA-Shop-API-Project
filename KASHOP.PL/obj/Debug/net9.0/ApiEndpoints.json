@@ -1,6 +1,22 @@
 [
   {
     "ContainingType": "KASHOP.PL.Areas.Identity.AccountController",
+    "Method": "Login",
+    "RelativePath": "api/auth/Account/Login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "KASHOP.DAL.DTO.Request.LoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "KASHOP.PL.Areas.Identity.AccountController",
     "Method": "Register",
     "RelativePath": "api/auth/Account/Register",
     "HttpMethod": "POST",
