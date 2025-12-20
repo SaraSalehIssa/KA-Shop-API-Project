@@ -4,6 +4,7 @@ using KASHOP.DAL.DTO.Response;
 using KASHOP.DAL.Models;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -20,11 +21,13 @@ namespace KASHOP.BLL.Service
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly IEmailSender _emailSender;
 
-        public AuthenticationService(UserManager<ApplicationUser> userManager, IConfiguration configuration)
+        public AuthenticationService(UserManager<ApplicationUser> userManager, IConfiguration configuration, IEmailSender emailSender)
         {
             _userManager = userManager;
             _configuration = configuration;
+            _emailSender = emailSender;
         }
         public async Task<LoginResponse> LoginAsync(LoginRequest loginRequest)
         {
@@ -87,6 +90,16 @@ namespace KASHOP.BLL.Service
                     };
                 }
                 await _userManager.AddToRoleAsync(user, "User");
+
+                var emailUrl = $"https://localhost:7026/api/auth/Account/ConfirmEmail?email={user.Email}";
+
+                await _emailSender.SendEmailAsync(
+                    user.Email,
+                    "Welcome!",
+                    $"<h1>Welcome {user.FullName}</h1>" +
+                    $"<a href='{emailUrl}'>Confirm Email</a>"
+                );
+
                 return new RegisterResponse()
                 {
                     Success = true,
@@ -104,6 +117,11 @@ namespace KASHOP.BLL.Service
                     }
                 };
             }
+        }
+
+        public async Task<string> ConfirmEmailAsync(string email)
+        {
+            return email;
         }
 
         private async Task<string> GenerateJwtToken(ApplicationUser user)

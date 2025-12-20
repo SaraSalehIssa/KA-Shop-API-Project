@@ -11,21 +11,22 @@ namespace KASHOP.BLL.Service
 {
     public class EmailSender : IEmailSender
     {
-        public Task SendEmailAsync(string email, string subject, string message)
+        public Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            var client = new SmtpClient("smtp.office365.com", 587)
+            var client = new SmtpClient("smtp.gmail.com", 587)
             {
                 EnableSsl = true,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential("your.email@live.com", "your password")
+                Credentials = new NetworkCredential("issasalehsara2001@gmail.com", "yqav vkte bmph vhzj")
             };
 
             return client.SendMailAsync(
-                new MailMessage(from: "your.email@live.com",
+                new MailMessage(from: "issasalehsara2001@gmail.com",
                                 to: email,
                                 subject,
-                                message
-                                ));
+                                htmlMessage
+                                )
+                { IsBodyHtml=true});
         }
     }
 }
