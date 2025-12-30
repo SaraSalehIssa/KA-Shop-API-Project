@@ -22,12 +22,16 @@ namespace KASHOP.BLL.Service
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
         private readonly IEmailSender _emailSender;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AuthenticationService(UserManager<ApplicationUser> userManager, IConfiguration configuration, IEmailSender emailSender)
+        public AuthenticationService(UserManager<ApplicationUser> userManager, IConfiguration configuration, IEmailSender emailSender, SignInManager<ApplicationUser>
+            signInManager
+            )
         {
             _userManager = userManager;
             _configuration = configuration;
             _emailSender = emailSender;
+            _signInManager = signInManager;
         }
         public async Task<LoginResponse> LoginAsync(LoginRequest loginRequest)
         {
@@ -43,15 +47,52 @@ namespace KASHOP.BLL.Service
                     };
                 }
 
-                var result = await _userManager.CheckPasswordAsync(user, loginRequest.Password);
-                if (!result)
+                if(await _userManager.IsLockedOutAsync(user))
                 {
                     return new LoginResponse()
                     {
                         Success = false,
-                        Message = "Invalid Password!",
+                        Message = "Sorry, Accout is Locked! Please Try Again!"
                     };
                 }
+
+                var result = await _signInManager.CheckPasswordSignInAsync(user, loginRequest.Password, true);
+                if (result.IsLockedOut)
+                {
+                    return new LoginResponse()
+                    {
+                        Success = false,
+                        Message = "Sorry, Accout is Locked! Please Try Again!"
+                    };
+                }
+
+                else if (result.IsNotAllowed)
+                {
+                    return new LoginResponse()
+                    {
+                        Success = false,
+                        Message = "Sorry, Please Confirm Your Email!"
+                    };
+                }
+
+                if (!result.Succeeded)
+                {
+                    return new LoginResponse()
+                    {
+                        Success = false,
+                        Message = "Sorry, Invalid Password!"
+                    };
+                }
+
+                //var result = await _userManager.CheckPasswordAsync(user, loginRequest.Password);
+                //if (!result)
+                //{
+                //    return new LoginResponse()
+                //    {
+                //        Success = false,
+                //        Message = "Invalid Password!",
+                //    };
+                //}
 
                 return new LoginResponse()
                 {
@@ -91,7 +132,10 @@ namespace KASHOP.BLL.Service
                 }
                 await _userManager.AddToRoleAsync(user, "User");
 
-                var emailUrl = $"https://localhost:7026/api/auth/Account/ConfirmEmail?email={user.Email}";
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                token = Uri.EscapeDataString(token);
+
+                var emailUrl = $"https://localhost:7026/api/auth/Account/ConfirmEmail?token={token}&userid={user.Id}";
 
                 await _emailSender.SendEmailAsync(
                     user.Email,
@@ -119,9 +163,17 @@ namespace KASHOP.BLL.Service
             }
         }
 
-        public async Task<string> ConfirmEmailAsync(string email)
+        public async Task<bool> ConfirmEmailAsync(string token, string userId)
         {
-            return email;
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user is null)
+                return false;
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (!result.Succeeded)
+                return false;
+
+            return true;
         }
 
         private async Task<string> GenerateJwtToken(ApplicationUser user)

@@ -39,9 +39,9 @@ namespace KASHOP.PL.Areas.Identity
         }
 
         [HttpGet("ConfirmEmail")]
-        public async Task<IActionResult> ConfirmEmail(string email)
+        public async Task<IActionResult> ConfirmEmail(string token, string userId)
         {
-            var result = await _authenticationService.ConfirmEmailAsync(email);
+            var result = await _authenticationService.ConfirmEmailAsync(token, userId);
             return Ok(result);
         }
     }

@@ -24,7 +24,12 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "email",
+        "Name": "token",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "userId",
         "Type": "System.String",
         "IsRequired": false
       }
