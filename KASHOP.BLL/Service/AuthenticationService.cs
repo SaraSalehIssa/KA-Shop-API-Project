@@ -197,5 +197,84 @@ namespace KASHOP.BLL.Service
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        public async Task<ForgetPasswordResponse> RequestPasswordReset(ForgetPasswordRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if(user == null)
+            {
+                return new ForgetPasswordResponse { 
+                    Success = false,
+                    Message = "Email Not Found!",
+                };
+            }
+
+            var random = new Random();
+            var code = random.Next(1000, 9999).ToString();
+
+            user.CodeResetPassword = code;
+            user.PasswordResetCodeExpiry = DateTime.UtcNow.AddMinutes(15);
+
+            await _userManager.UpdateAsync(user);
+
+
+            await _emailSender.SendEmailAsync(request.Email, "Reset Password", $"<p>Code is: {code}</p>");
+            return new ForgetPasswordResponse
+            {
+                Success = true,
+                Message = "Code sent to your email"
+            };
+        }
+
+        public async Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null)
+            {
+                return new ResetPasswordResponse
+                {
+                    Success = false,
+                    Message = "Email Not Found!",
+                };
+            }
+
+            else if (user.CodeResetPassword != request.Code)
+            {
+                return new ResetPasswordResponse
+                {
+                    Success = false,
+                    Message = "Error Code!",
+                };
+            }
+
+            else if (user.PasswordResetCodeExpiry < DateTime.UtcNow)
+            {
+                return new ResetPasswordResponse
+                {
+                    Success = false,
+                    Message = "Expired Code!",
+                };
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                return new ResetPasswordResponse
+                {
+                    Success = false,
+                    Message = "Error on Reset Password!",
+                    Errors = result.Errors.Select(e=>e.Description).ToList()
+                };
+            }
+
+            await _emailSender.SendEmailAsync(request.Email, "Changed Password", $"<p>Password is Changed!</p>");
+            return new ResetPasswordResponse
+            {
+                Success = true,
+                Message = "Password is Changed!"
+            };
+        }
     }
 }
